@@ -1,6 +1,7 @@
 (ns morse.core
   (:require [reagent.core :as reagent :refer [atom]]
-            [morse.code :as morse-code]))
+            [morse.code :as morse-code]
+            [clojure.string :as str]))
 
 (enable-console-print!)
 
@@ -36,7 +37,7 @@
   (fn []
     [:div
      [:div [atom-input val]]
-     [:p "Value: "  (->> @val morse-code/encode (apply str))]
+     [:p "Value: "  (->> @val morse-code/encode (str/join \space))]
      #_[:button {:on-click #(play (morse-code/encode @val))} "Play"]
      #_[:div#play {:style {:width 200 :height 200 :background-color @color}}]])))
 
