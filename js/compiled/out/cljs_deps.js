@@ -57,4 +57,4 @@ goog.addDependency("../reagent/dom/server.js", ['reagent.dom.server'], ['reagent
 goog.addDependency("../reagent/dom.js", ['reagent.dom'], ['reagent.impl.util', 'reagent.interop', 'reagent.ratom', 'cljs.core', 'reagent.impl.template', 'reagent.impl.batching', 'cljsjs.react.dom', 'reagent.debug']);
 goog.addDependency("../reagent/core.js", ['reagent.core'], ['reagent.impl.util', 'reagent.dom.server', 'reagent.interop', 'reagent.ratom', 'cljs.core', 'reagent.impl.template', 'reagent.impl.batching', 'reagent.impl.component', 'reagent.debug', 'reagent.dom']);
 goog.addDependency("../morse/core.js", ['morse.core'], ['morse.code', 'reagent.core', 'cljs.core', 'clojure.string']);
-goog.addDependency("../79F3784.js", ['figwheel.connect.dev'], ['cljs.core', 'morse.core', 'figwheel.client', 'figwheel.client.utils']);
+goog.addDependency("../BBECE3F.js", ['figwheel.connect.dev'], ['cljs.core', 'morse.core', 'figwheel.client', 'figwheel.client.utils']);
