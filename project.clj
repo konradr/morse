@@ -17,7 +17,7 @@
 
   :source-paths ["src"]
 
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
+  :clean-targets ^{:protect false} ["js/compiled" "target"]
 
   :cljsbuild {:builds
               [{:id "dev"
@@ -35,8 +35,8 @@
 
                 :compiler {:main morse.core
                            :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/morse.js"
-                           :output-dir "resources/public/js/compiled/out"
+                           :output-to "js/compiled/morse.js"
+                           :output-dir "js/compiled/out"
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
@@ -46,7 +46,7 @@
                ;; lein cljsbuild once min
                {:id "min"
                 :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/morse.js"
+                :compiler {:output-to "js/compiled/morse.js"
                            :main morse.core
                            :optimizations :advanced
                            :pretty-print false}}]}
@@ -55,7 +55,7 @@
              ;; :server-port 3449 ;; default
              ;; :server-ip "127.0.0.1"
 
-             :css-dirs ["resources/public/css"] ;; watch and update CSS
+             :css-dirs ["css"] ;; watch and update CSS
 
              ;; Start an nREPL server into the running figwheel process
              ;; :nrepl-port 7888
