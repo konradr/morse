@@ -1,4 +1,7 @@
 /resources/public/js/compiled/**
+*.map
+*.cache.edn
+.figwheel-compile-stamp
 figwheel_server.log
 pom.xml
 pom.xml.asc
