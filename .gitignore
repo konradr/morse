@@ -1,4 +1,5 @@
 /resources/public/js/compiled/**
+js/compiled/out/*.js
 *.map
 *.cache.edn
 .figwheel-compile-stamp
