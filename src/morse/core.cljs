@@ -11,6 +11,8 @@
 
 (defonce app-state (atom {:text "Hello world!"
                           :rate 250
+                          :long 3
+                          :pause 7
                           :idle "#fff"
                           :on "#f00"}))
 
@@ -29,11 +31,17 @@
            :on-change (fn [e]
                         (swap! app-state assoc param (-> e .-target .-value)))}])
 
+(defn input [param min max step]
+  [:input {:type "number" :min min :max max :step step
+           :value (get @app-state param)
+           :style {:border "solid 1px black"}
+           :on-change #(swap! app-state assoc param (-> % .-target .-value))}])
+
 (defonce color (atom (:idle @app-state)))
 
 (defn decode [c]
   (case c
-    \- (* 3 (:rate @app-state))
+    \- (* (:long @app-state) (:rate @app-state))
     \. (:rate @app-state)))
 
 (defn blink [c]
@@ -46,9 +54,9 @@
   ;(println c code)
   (when (:play? @app-state)
     (cond
-      (= \space c) (js/setTimeout #(play code) (* 7 (:rate @app-state)))
+      (= \space c) (js/setTimeout #(play code) (* (:pause @app-state) (:rate @app-state)))
       (nil? c) (swap! app-state assoc :play? false)
-      :default (do (js/setTimeout #(play code) (+ (blink c) (* 3 (:rate @app-state))))))))
+      :default (do (js/setTimeout #(play code) (+ (int (blink c)) (* (:long @app-state) (:rate @app-state))))))))
 
 (defn to-test [text]
   (as-> text $
@@ -66,8 +74,12 @@
   (let [text (atom {:input "Your morse code is here"})]
   (fn []
     [:div
-     ;[:div app-state]
+     [:div app-state]
      [:button {:on-click #(swap! app-state update-in [:hide :input] not)} "Input text"]
+     [:ul {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}}
+      [:li "Rate: " [input :rate 50 5000 50]]
+      [:li "Long: " [input :long 0.1 10 0.1]]
+      [:li "Pause: " [input :pause 0.1 30 0.1]]]
      [:div [atom-input text :input]]
      [:p {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}} "Value: "
       [:span#code
@@ -76,7 +88,6 @@
                            (swap! app-state assoc :play? false)
                            (play-test text))}
       (if (:play? @app-state) "Stop" "Play")]
-     ;[slider :rate 250 100 1000 50]
      [:div#play {:style {:width 200 :height 200 :background-color @color}}]
      [:div [:p "Test"] [atom-input text :result]]
      [:button {:on-click #(js/alert (if (= (:test @text) (str/upper-case (:result @text))) "Passed" "Failed"))} "Done"]
