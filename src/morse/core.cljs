@@ -77,9 +77,9 @@
      ;[:div app-state]
      [:button {:on-click #(swap! app-state update-in [:hide :input] not)} "Input text"]
      [:ul {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}}
-      [:li "Rate: " [input :rate 50 5000 50]]
-      [:li "Long: " [input :long 0.1 10 0.1]]
-      [:li "Pause: " [input :pause 0.1 30 0.1]]]
+      [:li "Rate: " [input :rate 50 5000 50] "ms"]
+      [:li "Long: " [input :long 0.1 10 0.1] "x"]
+      [:li "Pause: " [input :pause 0.1 30 0.1] "x"]]
      [:div [atom-input text :input]]
      [:p {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}} "Value: "
       [:span#code
@@ -91,6 +91,8 @@
      [:div#play {:style {:width 200 :height 200 :background-color @color}}]
      [:div [:p "Test"] [atom-input text :result]]
      [:button {:on-click #(js/alert (if (= (:test @text) (str/upper-case (:result @text))) "Passed" "Failed"))} "Done"]
+     [:button {:on-click #(swap! app-state update-in [:hide :answer] not)} "Answer"]
+     [:p {:style {:display (if (get-in @app-state [:hide :answer]) "none" "block")}} (:test @text)]
      ])))
 
 (reagent/render-component [state]
