@@ -74,7 +74,7 @@
   (let [text (atom {:input "Your morse code is here"})]
   (fn []
     [:div
-     [:div app-state]
+     ;[:div app-state]
      [:button {:on-click #(swap! app-state update-in [:hide :input] not)} "Input text"]
      [:ul {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}}
       [:li "Rate: " [input :rate 50 5000 50]]
