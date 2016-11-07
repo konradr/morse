@@ -14,15 +14,14 @@
                           :idle "#fff"
                           :on "#f00"}))
 
-(defn hello-world []
-  [:p (:text @app-state)])
-
-(defn atom-input [value]
+(defn atom-input [value name]
   [:textarea {:type "text"
-              :cols 80
               :rows 10
-           :value @value
-           :on-change #(reset! value (-> % .-target .-value))}])
+              :value (get @value name)
+              :style {:display (if (get-in @app-state [:hide name]) "none" "block")
+                      :width "100%"
+                      :border "solid 1px black"}
+              :on-change #(swap! value assoc name (-> % .-target .-value))}])
 
 (defn slider [param value min max step]
   [:input {:type "range" :value value :min min :max max :step step
@@ -45,23 +44,43 @@
 
 (defn play [[c & code]]
   ;(println c code)
-  (cond
-    (= \space c) (js/setTimeout #(play code) (* 7 (:rate @app-state)))
-    (nil? c) :no-op
-    :default (do (js/setTimeout #(play code) (+ (blink c) (* 3 (:rate @app-state)))))))
+  (when (:play? @app-state)
+    (cond
+      (= \space c) (js/setTimeout #(play code) (* 7 (:rate @app-state)))
+      (nil? c) (swap! app-state assoc :play? false)
+      :default (do (js/setTimeout #(play code) (+ (blink c) (* 3 (:rate @app-state))))))))
+
+(defn to-test [text]
+  (as-> text $
+        (str/upper-case $)
+        (str/split $ #"\s")
+        (shuffle $)
+        (str/join \space $)))
+
+(defn play-test [text]
+  (let [test-text (:test (swap! text assoc :test (to-test (:input @text))))]
+    (swap! app-state assoc :play? true)
+    (-> test-text #_(conj \+) morse-code/encode str/join play)))
 
 (defn state []
-  (let [val (atom "Your morse code is here")]
+  (let [text (atom {:input "Your morse code is here"})]
   (fn []
     [:div
-     [:div app-state]
-     [:div [atom-input val]]
-     [:p "Value: "
-      [:a#code
-       (->> @val morse-code/encode (str/join \space))]]
-     [:button {:on-click #(play (->> @val morse-code/encode (str/join)))} "Play"]
+     ;[:div app-state]
+     [:button {:on-click #(swap! app-state update-in [:hide :input] not)} "Input text"]
+     [:div [atom-input text :input]]
+     [:p {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}} "Value: "
+      [:span#code
+       (->> @text :input morse-code/encode (str/join \space))]]
+     [:button {:on-click #(if (:play? @app-state)
+                           (swap! app-state assoc :play? false)
+                           (play-test text))}
+      (if (:play? @app-state) "Stop" "Play")]
      ;[slider :rate 250 100 1000 50]
-     [:div#play {:style {:width 200 :height 200 :background-color @color}}]])))
+     [:div#play {:style {:width 200 :height 200 :background-color @color}}]
+     [:div [:p "Test"] [atom-input text :result]]
+     [:button {:on-click #(js/alert (if (= (:test @text) (str/upper-case (:result @text))) "Passed" "Failed"))} "Done"]
+     ])))
 
 (reagent/render-component [state]
                           (. js/document (getElementById "app")))
