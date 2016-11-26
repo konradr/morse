@@ -12,6 +12,7 @@
 (defonce app-state (atom {:text "Hello world!"
                           :rate 250
                           :long 3
+                          :letter-pause 5
                           :pause 7
                           :idle "#fff"
                           :on "#f00"}))
@@ -56,7 +57,7 @@
     (cond
       (= \space c) (js/setTimeout #(play code) (* (:pause @app-state) (:rate @app-state)))
       (nil? c) (swap! app-state assoc :play? false)
-      :default (do (js/setTimeout #(play code) (+ (int (blink c)) (* (:long @app-state) (:rate @app-state))))))))
+      :default (do (js/setTimeout #(play code) (+ (int (blink c)) (* (:letter-pause @app-state) (:rate @app-state))))))))
 
 (defn to-test [text]
   (as-> text $
@@ -79,6 +80,7 @@
      [:ul {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}}
       [:li "Rate: " [input :rate 50 5000 50] "ms"]
       [:li "Long: " [input :long 0.1 10 0.1] "x"]
+      [:li "Letter pause: " [input :letter-pause 0.1 10 0.1] "x"]
       [:li "Pause: " [input :pause 0.1 30 0.1] "x"]]
      [:div [atom-input text :input]]
      [:p {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}} "Value: "
