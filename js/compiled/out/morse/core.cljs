@@ -9,12 +9,14 @@
 
 ;; define your app data so that it doesn't get over-written on reload
 
-(defonce app-state (atom {:text "Hello world!"
-                          :rate 250
-                          :long 3
-                          :pause 7
-                          :idle "#fff"
-                          :on "#f00"}))
+(defonce app-state (atom {:text         "Hello world!"
+                          :rate         250
+                          :long         3
+                          :blink-pause  1
+                          :letter-pause 3
+                          :word-pause   7
+                          :idle         "#fff"
+                          :on           "#f00"}))
 
 (defn atom-input [value name]
   [:textarea {:type "text"
@@ -54,9 +56,10 @@
   ;(println c code)
   (when (:play? @app-state)
     (cond
-      (= \space c) (js/setTimeout #(play code) (* (:pause @app-state) (:rate @app-state)))
+      (= \space c) (js/setTimeout #(play code) (* (:word-pause @app-state) (:rate @app-state)))
       (nil? c) (swap! app-state assoc :play? false)
-      :default (do (js/setTimeout #(play code) (+ (int (blink c)) (* (:long @app-state) (:rate @app-state))))))))
+      (= \| c) (js/setTimeout #(play code) (* (:letter-pause @app-state) (:rate @app-state)))
+      :default (js/setTimeout #(play code) (+ (int (blink c)) (* (:blink-pause @app-state) (:rate @app-state)))))))
 
 (defn to-test [text]
   (as-> text $
@@ -68,7 +71,7 @@
 (defn play-test [text]
   (let [test-text (:test (swap! text assoc :test (to-test (:input @text))))]
     (swap! app-state assoc :play? true)
-    (-> test-text #_(conj \+) morse-code/encode str/join play)))
+    (->> test-text #_(conj \+) morse-code/encode (str/join \|) play)))
 
 (defn state []
   (let [text (atom {:input "Your morse code is here"})]
@@ -79,7 +82,9 @@
      [:ul {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}}
       [:li "Rate: " [input :rate 50 5000 50] "ms"]
       [:li "Long: " [input :long 0.1 10 0.1] "x"]
-      [:li "Pause: " [input :pause 0.1 30 0.1] "x"]]
+      [:li "Blink pause: " [input :blink-pause 0.1 10 0.1] "x"]
+      [:li "Letter pause: " [input :letter-pause 0.1 10 0.1] "x"]
+      [:li "Word pause: " [input :word-pause 0.1 30 0.1] "x"]]
      [:div [atom-input text :input]]
      [:p {:style {:display (if (get-in @app-state [:hide :input]) "none" "block")}} "Value: "
       [:span#code
